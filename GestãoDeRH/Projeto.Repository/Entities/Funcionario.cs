@@ -10,11 +10,12 @@ namespace Projeto.Repository.Entities
         public string Nome { get; set; }
         public decimal Salario { get; set; }
         public DateTime DataAdmissao { get; set; }
+
         public int IdSetor { get; set; }
         public int IdFuncao { get; set; }
 
+        //Relacionamentos de Associação (TER)
         public Setor Setor { get; set; }
         public Funcao Funcao { get; set; }
-
     }
 }
