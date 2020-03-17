@@ -1,43 +1,44 @@
-﻿using Dapper;
-using Projeto.Repository.Contracts;
-using Projeto.Repository.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
+using System.Data.SqlClient; //biblioteca para o SqlServer
+using Dapper; //biblioteca para executar os comandos SQL
+using Projeto.Repository.Entities; //importando
+using Projeto.Repository.Contracts; //importando
+using System.Linq;
 
 namespace Projeto.Repository.Repositories
 {
     public class FuncionarioRepository : IFuncionarioRepository
     {
-
+        //atributo
         private readonly string connectionString;
 
+        //construtor para receber o valor da connectionstring
         public FuncionarioRepository(string connectionString)
         {
             this.connectionString = connectionString;
         }
 
+        public void Inserir(Funcionario entity)
+        {
+            var query = "insert into Funcionario(Nome, Salario, DataAdmissao, IdSetor, IdFuncao) " 
+                      + "values(@Nome, @Salario, @DataAdmissao, @IdSetor, @IdFuncao) " 
+                      + "SELECT SCOPE_IDENTITY()";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                entity.IdFuncao = connection.QueryFirstOrDefault<int>(query, entity);
+            }
+        }
+
         public void Atualizar(Funcionario entity)
         {
-            var query = "update Funcionario set Nome = @Nome, Salario = @Salario, "
-                + "DataAdmissao = @DataAdmissao, IdSetor = @IdSetor, IdFuncao = @IdFuncao "
-                + "where IdFuncionario = @IdFuncionario";
+            var query = "update Funcionario set Nome = @Nome, Salario = @Salario, DataAdmissao = @DataAdmissao, IdSetor = @IdSetor, IdFuncao = @IdFuncao where IdFuncionario = @IdFuncionario";
 
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Execute(query, entity);
-            }
-        }
-
-        public List<Funcionario> ConsultarTodos()
-        {
-            var query = "Select * from Funcionario";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                return connection.Query<Funcionario>(query).ToList();
             }
         }
 
@@ -51,14 +52,13 @@ namespace Projeto.Repository.Repositories
             }
         }
 
-        public void Inserir(Funcionario entity)
+        public List<Funcionario> ConsultarTodos()
         {
-            var query = "insert into Funcionario(Nome, Salario, DataAdmissao, IdSetor, IdFuncao) "
-                        + "values(@Nome, @Salario, @DataAdmissao, @IdSetor, @IdFuncao)";
+            var query = "select * from Funcionario";
 
             using (var connection = new SqlConnection(connectionString))
             {
-                connection.Execute(query, entity);
+                return connection.Query<Funcionario>(query).ToList();
             }
         }
 
