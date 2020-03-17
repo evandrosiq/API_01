@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Projeto.Repository.Contracts;
 using Projeto.Repository.Repositories;
 
@@ -27,14 +26,13 @@ namespace Projeto.Services
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             #region Injeção de Dependência
 
-            //capturar a string de conexão do arquivo appsettings.json
-            var connectionString = Configuration.GetConnectionString("Aula16");
+            var connectionString = Configuration.GetConnectionString("RH");
 
-            //mapear as interfaces e classe criadas no repositorio
             services.AddTransient<ISetorRepository, SetorRepository>
                 (map => new SetorRepository(connectionString));
 
@@ -44,26 +42,6 @@ namespace Projeto.Services
             services.AddTransient<IFuncionarioRepository, FuncionarioRepository>
                 (map => new FuncionarioRepository(connectionString));
 
-            #endregion
-
-            #region Configuração do Swagger
-
-            services.AddSwaggerGen(
-                c =>
-                {
-                    c.SwaggerDoc("v1", new OpenApiInfo
-                    {
-                        Title = "Sistema de Controle de Funcionários",
-                        Description = "API REST para integração com serviços de funcionário",
-                        Version = "v1",
-                        Contact = new OpenApiContact
-                        {
-                            Name = "Evandro Siqueira",                            
-                            Email = "evandrobio@hotmail.com"
-                        }
-                    });
-                }
-                );
 
             #endregion
 
@@ -78,16 +56,6 @@ namespace Projeto.Services
             }
 
             app.UseMvc();
-
-            #region Configuração do Swagger
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Projeto API");
-            });
-
-            #endregion
         }
     }
 }
